@@ -4,14 +4,12 @@ import com.startit.userservice.service.ChatServiceClient;
 import com.startit.userservice.service.UserService;
 import com.startit.userservice.transfer.Chat;
 import com.startit.userservice.transfer.User;
+import feign.Body;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -24,6 +22,12 @@ public class UserController {
 
     private final UserService service;
     private final ChatServiceClient chatService;
+
+    @PostMapping("/save")
+    public Mono<ResponseEntity<Long>> saveUser(@RequestBody User user) {
+        return service.save(user)
+                .map(ResponseEntity::ok);
+    }
 
     @GetMapping("/chats")
     public Mono<ResponseEntity<List<Chat>>> getChats(Pageable pageable,
@@ -44,6 +48,13 @@ public class UserController {
         return service.findById(id)
                 .map(user -> ResponseEntity.ok(user.orElseThrow()))
                 .onErrorReturn(Exception.class, ResponseEntity.badRequest().build());
+    }
+
+    @GetMapping("/username/{username}")
+    public Mono<ResponseEntity<Optional<User>>> userByUsername(@PathVariable String username) {
+        return service.findByUsername(username)
+                .map(ResponseEntity::ok)
+                .onErrorReturn(Exception.class, ResponseEntity.internalServerError().build());
     }
 
     @GetMapping("/exists/{id}")
