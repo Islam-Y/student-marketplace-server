@@ -21,7 +21,7 @@ public class AuthService {
     public AuthResponse register(Credentials request) {
         var reqUser = userServiceClient.findByUsername(request.getUser().getUsername());
 
-        if (reqUser != null) {
+        if (reqUser.isPresent()) {
             throw new UserExistsException("Пользователь с таким именем уже существует");
         } else if (request.getUser().getUsername().length() < 3) {
             throw new BadRegistrationDataException("Имя пользователя должно быть не менее 3-х символов");
@@ -45,15 +45,15 @@ public class AuthService {
 
     public AuthResponse login(Credentials request) {
         var reqUser = userServiceClient.findByUsername(request.getUser().getUsername());
-        if (reqUser == null)
+        if (reqUser.isEmpty())
             throw new UserExistsException("Пользователя под таким именем не существует");
 
-        var hashedPassword = passwordEncoder.encode(request.getPassword());
-        if (!reqUser.getPassword().equals(hashedPassword))
+        var rawUser = reqUser.get();
+        if (!passwordEncoder.matches(request.getPassword(), rawUser.getPassword()))
             throw new BadRegistrationDataException("Неверный пароль пользователя");
 
-        var jwtToken = jwtService.generateToken(reqUser.getUsername());
-        var refreshToken = jwtService.generateRefreshToken(reqUser.getUsername());
+        var jwtToken = jwtService.generateToken(rawUser.getUsername());
+        var refreshToken = jwtService.generateRefreshToken(rawUser.getUsername());
 
         return AuthResponse.builder()
                 .accessToken(jwtToken)
