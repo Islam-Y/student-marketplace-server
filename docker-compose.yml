@@ -1,0 +1,31 @@
+version: '3'
+services:
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
+#      - SPRING_DATASOURCE_USERNAME=fost
+#      - SPRING_DATASOURCE_PASSWORD=fost
+#      - SPRING_FLYWAY_URL=jdbc:postgresql://db:5432/studs
+#      - SPRING_FLYWAY_USER=fost
+#      - SPRING_FLYWAY_PASSWORD=fost
+#    depends_on:
+#      - db
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U fost -h db" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: studs
+      POSTGRES_USER: fost
+      POSTGRES_PASSWORD: fost
