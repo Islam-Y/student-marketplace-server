@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface FeedbackRepo extends CrudRepository<FeedbackEntity, Long> {
 
-    List<FeedbackEntity> findAllByCustomer_Id(Long customerId, Pageable pageable);
+    List<FeedbackEntity> findAllByCustomerId(Long customerId, Pageable pageable);
 
     @Query(
-            value = "SELECT * FROM feedback LEFT JOIN item i ON i.id = feedback.item_id WHERE i.seller_id = ?1",
+            value = "SELECT * FROM feedback LEFT JOIN item i ON i.id = feedback.item_id WHERE i.sellerId = ?1",
             nativeQuery = true
     )
-    List<FeedbackEntity> findAllByItemSeller_Id(Long sellerId, Pageable pageable);
+    List<FeedbackEntity> findAllByItemSellerId(Long sellerId, Pageable pageable);
 }

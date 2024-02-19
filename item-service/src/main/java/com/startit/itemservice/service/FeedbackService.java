@@ -7,6 +7,7 @@ import com.startit.itemservice.repository.FeedbackRepo;
 import com.startit.itemservice.repository.ItemRepo;
 import com.startit.itemservice.transfer.Feedback;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -42,13 +43,13 @@ public class FeedbackService {
     }
 
     public List<Feedback> getSellerFeedback(Long userId, Pageable pageable) {
-        return repo.findAllByItemSeller_Id(userId, pageable).stream()
+        return repo.findAllByItemSellerId(userId, pageable).stream()
                 .map(MAPPER::toDto)
                 .toList();
     }
 
     public List<Feedback> getCustomerFeedback(Long userId, Pageable pageable) {
-        return repo.findAllByCustomer_Id(userId, pageable).stream()
+        return repo.findAllByCustomerId(userId, pageable).stream()
                 .map(MAPPER::toDto)
                 .toList();
     }
