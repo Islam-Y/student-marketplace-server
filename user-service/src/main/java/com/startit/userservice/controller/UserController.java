@@ -4,7 +4,6 @@ import com.startit.userservice.service.ChatServiceClient;
 import com.startit.userservice.service.UserService;
 import com.startit.userservice.transfer.Chat;
 import com.startit.userservice.transfer.User;
-import feign.Body;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
