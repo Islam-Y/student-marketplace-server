@@ -10,6 +10,7 @@ import com.startit.itemservice.transfer.Item;
 import com.startit.itemservice.transfer.SearchFilter;
 import com.startit.itemservice.utils.ItemSpecification;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,10 @@ public class ItemService {
 
     public Optional<Item> findById(Long id) {
         return repo.findById(id).map(MAPPER::toDto);
+    }
+
+    public Page<Item> findBySellerId(Long id, Pageable pageable) {
+        return repo.findBySellerId(id, pageable).map(MAPPER::toDto);
     }
 
     public List<Item> searchItems(SearchFilter searchFilter, Pageable pageable) {

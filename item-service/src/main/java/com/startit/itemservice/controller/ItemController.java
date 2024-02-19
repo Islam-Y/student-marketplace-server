@@ -5,6 +5,7 @@ import com.startit.itemservice.transfer.Item;
 import com.startit.itemservice.transfer.SearchFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,6 +77,15 @@ public class ItemController {
             return ResponseEntity.ok(service.findById(id).orElseThrow());
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/all_by_user/{id}")
+    public ResponseEntity<Page<Item>> getItemsByUser(@PathVariable Long id, Pageable pageable) {
+        try {
+            return ResponseEntity.ok(service.findBySellerId(id, pageable));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

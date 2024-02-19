@@ -28,20 +28,6 @@ public class UserController {
                 .map(ResponseEntity::ok);
     }
 
-    @GetMapping("/chats")
-    public Mono<ResponseEntity<List<Chat>>> getChats(Pageable pageable,
-                                                     HttpServletResponse response,
-                                                     String username) {
-        return service.findByUsername(username)
-                .map(Optional::orElseThrow)
-                .map(user -> chatService.getChatsByUserId(user.getId(), pageable))
-                .map(chats -> {
-                    response.setHeader("X-Total-Count", String.valueOf(chats.size()));
-                    return ResponseEntity.ok(chats);
-                })
-                .onErrorReturn(Exception.class, ResponseEntity.badRequest().build());
-    }
-
     @GetMapping("/{id}")
     public Mono<ResponseEntity<User>> getInfo(@PathVariable Long id) {
         return service.findById(id)

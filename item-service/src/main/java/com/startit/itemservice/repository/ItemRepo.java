@@ -9,4 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ItemRepo extends CrudRepository<ItemEntity, Long>, JpaSpecificationExecutor<ItemEntity> {
     Page<ItemEntity> findAll(Pageable pageable);
+    Page<ItemEntity> findBySellerId(Long sellerId, Pageable pageable);
 }
