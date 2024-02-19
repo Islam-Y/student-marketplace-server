@@ -41,6 +41,6 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private boolean authMissing(ServerHttpRequest request) {
-        return !request.getHeaders().containsKey("Authorization");
+        var authHeader = request.getHeaders().get("Authorization");.getHeader();.containsKey("Authorization");
     }
 }
