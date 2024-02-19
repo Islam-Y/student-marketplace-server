@@ -6,6 +6,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -21,13 +22,16 @@ public class AuthenticationFilter implements GatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         if (validator.isSecured.test(request)) {
-            if (authMissing(request)) {
+            var authHeader = request.getHeaders().getOrEmpty("Authorization");
+            if (!authHeader.isEmpty() && !authHeader.get(0).startsWith("Bearer "))
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
-            }
 
-            final String token = request.getHeaders().getOrEmpty("Authorization").get(0);
+            String jwt = authHeader.get(0).substring(7);
 
-            if (jwtService.isExpired(token)) {
+            try {
+                if (!jwtService.isTokenExpired(jwt))
+                    return onError(exchange, HttpStatus.UNAUTHORIZED);
+            } catch (Exception ex) {
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
         }
@@ -38,9 +42,5 @@ public class AuthenticationFilter implements GatewayFilter {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
         return response.setComplete();
-    }
-
-    private boolean authMissing(ServerHttpRequest request) {
-        var authHeader = request.getHeaders().get("Authorization");.getHeader();.containsKey("Authorization");
     }
 }
