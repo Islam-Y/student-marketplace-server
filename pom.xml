@@ -16,6 +16,7 @@
         <module>item-service</module>
         <module>media-service</module>
         <module>notification-service</module>
+        <module>chat-service</module>
     </modules>
 
 </project>
