@@ -1,7 +1,7 @@
-package com.startit.authservice.mapper;
+package com.startit.userservice.mapper;
 
-import com.startit.authservice.entity.UserEntity;
-import com.startit.authservice.transfer.User;
+import com.startit.userservice.entity.UserEntity;
+import com.startit.userservice.transfer.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

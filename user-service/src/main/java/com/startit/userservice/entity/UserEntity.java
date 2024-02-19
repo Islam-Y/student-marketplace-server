@@ -1,6 +1,6 @@
-package com.startit.authservice.entity;
+package com.startit.userservice.entity;
 
-import com.startit.authservice.transfer.Role;
+import com.startit.userservice.transfer.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 

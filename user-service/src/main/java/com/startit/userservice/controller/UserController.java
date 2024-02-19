@@ -1,13 +1,12 @@
-package com.startit.authservice.controller;
+package com.startit.userservice.controller;
 
-import com.startit.authservice.service.ChatServiceClient;
-import com.startit.authservice.service.UserService;
-import com.startit.authservice.transfer.User;
+import com.startit.userservice.service.ChatServiceClient;
+import com.startit.userservice.service.UserService;
+import com.startit.userservice.transfer.User;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +26,10 @@ public class UserController {
     @GetMapping("/chats")
     public ResponseEntity<Object> getChats(Pageable pageable,
                                                HttpServletResponse response,
-                                               Authentication authentication
+                                               String username
     ) {
         try {
-            var user = service.findByUsername(authentication.getName());
+            var user = service.findByUsername(username);
             if (user.isEmpty())
                 return ResponseEntity.ok(Collections.EMPTY_LIST);
 

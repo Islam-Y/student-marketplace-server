@@ -1,6 +1,6 @@
-package com.startit.authservice.service;
+package com.startit.userservice.service;
 
-import com.startit.authservice.transfer.Chat;
+import com.startit.userservice.transfer.Chat;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
-package com.startit.authservice.repository;
+package com.startit.userservice.repository;
 
-import com.startit.authservice.entity.UserEntity;
+import com.startit.userservice.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

@@ -1,8 +1,8 @@
-package com.startit.authservice.service;
+package com.startit.userservice.service;
 
-import com.startit.authservice.mapper.UserMapper;
-import com.startit.authservice.repository.UserRepo;
-import com.startit.authservice.transfer.User;
+import com.startit.userservice.mapper.UserMapper;
+import com.startit.userservice.repository.UserRepo;
+import com.startit.userservice.transfer.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

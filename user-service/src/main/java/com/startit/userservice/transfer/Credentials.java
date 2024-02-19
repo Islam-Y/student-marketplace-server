@@ -1,4 +1,4 @@
-package com.startit.authservice.transfer;
+package com.startit.userservice.transfer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
