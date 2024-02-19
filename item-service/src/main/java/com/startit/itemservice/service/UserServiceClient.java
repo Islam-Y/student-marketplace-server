@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "user-service")
 public interface UserServiceClient {
     @GetMapping(value = "/api/v1/user/exists/{id}")
-    public Boolean userExists(@RequestParam Long userId);
+    public Boolean userExists(@RequestParam Long id);
     @GetMapping(value = "/api/v1/user/{id}")
-    public User getUser(@RequestParam Long userId);
+    public User getUser(@RequestParam Long id);
 }
