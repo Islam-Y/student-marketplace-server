@@ -10,5 +10,5 @@ import reactor.core.publisher.Mono;
 public interface UserServiceClient {
 
     @GetMapping(value = "/api/v1/user/{id}")
-    Mono<User> getUser(@PathVariable Long id);
+    User getUser(@PathVariable Long id);
 }

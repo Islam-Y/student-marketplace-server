@@ -38,7 +38,7 @@ public class ChatController {
 
     public Mono<ResponseEntity<Object>> postMessageFallback(Exception e) {
         return Mono.just(ResponseEntity.badRequest()
-                .body("Unable to post message. Try again later")
+                .body(e.getMessage())
         );
     }
 

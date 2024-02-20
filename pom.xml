@@ -14,9 +14,8 @@
         <module>user-service</module>
         <module>eureka-server</module>
         <module>item-service</module>
-        <module>media-service</module>
-        <module>notification-service</module>
         <module>chat-service</module>
+        <module>cloud-config-server</module>
         <module>gateway-service</module>
     </modules>
 

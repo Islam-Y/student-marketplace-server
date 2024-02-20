@@ -24,7 +24,7 @@ public class MessageService {
     public Mono<Message> save(Long chatId, Message message) {
         return Mono.zip(
                         chatRepo.findById(chatId),
-                        userServiceClient.getUser(message.getSenderId())
+                        Mono.fromCallable(() -> userServiceClient.getUser(message.getSenderId()))
                 )
                 .map(tuple -> {
                     var entity = MAPPER.toEntity(message);

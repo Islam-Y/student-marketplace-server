@@ -34,7 +34,7 @@ public class FeedbackController {
 
     private ResponseEntity<Object> createFeedbackFallback(Throwable t) {
         // Consider logging or sending alerts about the fallback event
-        return ResponseEntity.status(500).body("Feedback creation failed, please try again later.");
+        return ResponseEntity.status(500).body(t.getMessage());
     }
 
     @GetMapping("/seller/{userId}")
