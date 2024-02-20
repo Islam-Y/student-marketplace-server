@@ -4,6 +4,7 @@ import com.startit.authservice.exception.BadRegistrationDataException;
 import com.startit.authservice.exception.UserExistsException;
 import com.startit.authservice.service.AuthService;
 import com.startit.authservice.transfer.Credentials;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @CircuitBreaker(name = "registerUser", fallbackMethod = "registerFallback")
     @PostMapping("/register")
     public ResponseEntity<Object> registration(@RequestBody Credentials request) {
         try {
@@ -31,6 +33,11 @@ public class AuthController {
         }
     }
 
+    public ResponseEntity<Object> registerFallback(Exception e) {
+        return ResponseEntity.internalServerError().body("Registration service unavailable");
+    }
+
+    @CircuitBreaker(name = "loginUser", fallbackMethod = "loginFallback")
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody Credentials request) {
         try {
@@ -38,5 +45,9 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    public ResponseEntity<Object> loginFallback(Exception e) {
+        return ResponseEntity.internalServerError().body("Login service unavailable");
     }
 }

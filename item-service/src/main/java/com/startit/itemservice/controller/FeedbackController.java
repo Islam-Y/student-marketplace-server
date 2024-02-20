@@ -2,6 +2,7 @@ package com.startit.itemservice.controller;
 
 import com.startit.itemservice.service.FeedbackService;
 import com.startit.itemservice.transfer.Feedback;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ public class FeedbackController {
 
     private final FeedbackService service;
 
+    @CircuitBreaker(name = "createFeedback", fallbackMethod = "createFeedbackFallback")
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody Feedback feedback,
                                          String username) {
@@ -28,6 +30,11 @@ public class FeedbackController {
             return ResponseEntity.badRequest().body("Пропущено обязательное поле : customerId!");
 
         return ResponseEntity.ok(service.save(username, feedback));
+    }
+
+    private ResponseEntity<Object> createFeedbackFallback(Throwable t) {
+        // Consider logging or sending alerts about the fallback event
+        return ResponseEntity.status(500).body("Feedback creation failed, please try again later.");
     }
 
     @GetMapping("/seller/{userId}")
