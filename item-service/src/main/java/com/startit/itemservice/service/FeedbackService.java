@@ -26,16 +26,16 @@ public class FeedbackService {
     private static final FeedbackMapper MAPPER = FeedbackMapper.INSTANCE;
 
     public Feedback save(String username, Feedback feedback) {
-        if (!userServiceClient.userExists(feedback.getCustomerId()))
-            throw new BadDataException("Пользователь не найден!");
         var entity = new FeedbackEntity();
         entity.setMark(feedback.getMark());
         entity.setText(feedback.getText());
         entity.setItem(
                 itemRepo.findById(feedback.getItemId()).orElseThrow());
-        entity.setCustomerId(feedback.getCustomerId());
+        entity.setCustomerId(
+                userServiceClient.findByUsername(username).orElseThrow().getId()
+        );
 
-        if (userServiceClient.getUser(entity.getItem().getSellerId()).getUsername().equals(username))
+        if (entity.getItem().getSellerId().equals(entity.getCustomerId()))
             throw new BadDataException("Продавец не может оставить отзыв на собственный предмет!");
 
         return MAPPER.toDto(

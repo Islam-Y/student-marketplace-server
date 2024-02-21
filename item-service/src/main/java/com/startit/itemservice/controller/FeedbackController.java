@@ -1,16 +1,20 @@
 package com.startit.itemservice.controller;
 
+import com.startit.itemservice.jwt.JwtService;
 import com.startit.itemservice.service.FeedbackService;
 import com.startit.itemservice.transfer.Feedback;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/feedback")
 @RequiredArgsConstructor
@@ -18,16 +22,21 @@ public class FeedbackController {
 
     private final FeedbackService service;
 
+    private final JwtService jwtService;
+
     @CircuitBreaker(name = "createFeedback", fallbackMethod = "createFeedbackFallback")
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody Feedback feedback,
-                                         String username) {
+                                         HttpServletRequest request) {
+        var username = jwtService.extractUsername(
+                request.getHeader("Authorization").substring(7)
+        );
+        log.info("Create feedback by {}!", username);
+
         if (feedback.getMark() == null)
             return ResponseEntity.badRequest().body("Пропущено обязательное поле : mark!");
         if (feedback.getItemId() == null)
             return ResponseEntity.badRequest().body("Пропущено обязательное поле : itemId!");
-        if (feedback.getCustomerId() == null)
-            return ResponseEntity.badRequest().body("Пропущено обязательное поле : customerId!");
 
         return ResponseEntity.ok(service.save(username, feedback));
     }
