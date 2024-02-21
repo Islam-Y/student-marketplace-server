@@ -23,27 +23,27 @@ public class AuthenticationFilter implements GatewayFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
 
-        log.info("Started");
-
         if (validator.isSecured.test(request)) {
-            log.info("Inside");
-
             var authHeader = request.getHeaders().getOrEmpty("Authorization");
-            if (!authHeader.isEmpty() && !authHeader.get(0).startsWith("Bearer "))
+            if (authHeader.isEmpty() || !authHeader.get(0).startsWith("Bearer ")) {
+                log.info("{}: Auth header not valid!", exchange.getRequest().getPath());
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
+            }
 
             String jwt = authHeader.get(0).substring(7);
 
             try {
-                if (jwtService.isTokenExpired(jwt))
+                if (jwtService.isTokenExpired(jwt)) {
+                    log.info("{}: JWT Token is expired!", exchange.getRequest().getPath());
                     return onError(exchange, HttpStatus.UNAUTHORIZED);
+                }
             } catch (Exception ex) {
+                log.info("{}: JWT Token is not own-signed!", exchange.getRequest().getPath());
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
         }
 
-        log.info("Finished");
-
+        log.info("{}: Filter passed!", exchange.getRequest().getPath());
         return chain.filter(exchange);
     }
 

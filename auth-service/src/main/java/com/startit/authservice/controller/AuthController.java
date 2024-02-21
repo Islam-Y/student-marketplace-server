@@ -27,7 +27,7 @@ public class AuthController {
         } catch (BadRegistrationDataException e) {
             return ResponseEntity.badRequest().body("Данные для регистрации неправильны");
         } catch (UserExistsException e) {
-            return ResponseEntity.status(409).body("Пользователь не существует");
+            return ResponseEntity.status(409).body("Пользователь существует");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -42,8 +42,12 @@ public class AuthController {
     public ResponseEntity<Object> login(@RequestBody Credentials request) {
         try {
             return ResponseEntity.ok(authService.login(request));
+        } catch (BadRegistrationDataException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (UserExistsException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

@@ -29,7 +29,7 @@ public class ChatController {
     }
 
     @CircuitBreaker(name = "postMessage", fallbackMethod = "postMessageFallback")
-    @PostMapping("/{chatId}/post")
+    @PostMapping("/post/{chatId}")
     public Mono<ResponseEntity<Object>> postMessage(@PathVariable Long chatId,
                                                     @RequestBody Message message) {
         return messageService.save(chatId, message)
@@ -42,17 +42,17 @@ public class ChatController {
         );
     }
 
-    @GetMapping("/{chatId}/messages")
+    @GetMapping("/messages/{chatId}")
     public Flux<Message> getMessages(@PathVariable Long chatId, Pageable pageable) {
         return messageService.getMessages(chatId, pageable);
     }
 
     @CircuitBreaker(name = "getUserChats", fallbackMethod = "getUserChatsFallback")
-    @GetMapping("/user_chats")
-    public Mono<ResponseEntity<Object>> getUserChats(Pageable pageable,
-                                                         HttpServletResponse response,
-                                                         Long id) {
-        return service.getUserChats(id, pageable)
+    @GetMapping("/user/{userId}")
+    public Mono<ResponseEntity<Object>> getUserChats(@PathVariable Long userId,
+                                                     Pageable pageable,
+                                                     HttpServletResponse response) {
+        return service.getUserChats(userId, pageable)
                 .collectList()
                 .doOnNext(chats -> response.setHeader("X-Total-Count", String.valueOf(chats.size())))
                 .map(ResponseEntity::ok);
