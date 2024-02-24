@@ -1,0 +1,12 @@
+spring:
+  application.name: cloud-config-server
+  cloud.config.server.git:
+          uri: https://github.com/dmittrey/demo-config.git
+          clone-on-start: true
+
+eureka.client.service-url:
+  defaultZone: http://localhost:8761/eureka/
+
+server.port: 8762
+
+management.endpoints.web.exposure.include: "*"

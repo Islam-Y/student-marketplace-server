@@ -1,0 +1,26 @@
+spring:
+    application.name: user-service
+    cloud.config.enabled: false
+    #  config.import: configserver:http://localhost:8762
+    jackson:
+        property-naming-strategy: SNAKE_CASE
+
+    datasource:
+        url: jdbc:postgresql://localhost:5433/studs
+        username: fost
+        password: fost
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+
+eureka.client.service-url:
+    defaultZone: http://localhost:8761/eureka/
+
+server.port: 8085
+
+management.endpoints.web.exposure.include: "*"
