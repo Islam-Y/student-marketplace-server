@@ -1,4 +1,4 @@
-package com.startit.chatservice.transfer;
+package com.startit.shared.transfer;
 
 public enum Role {
 

@@ -1,10 +1,11 @@
 package com.startit.chatservice.repository;
 
 import com.startit.chatservice.entity.MessageEntity;
-import org.springframework.data.domain.Pageable;
+import com.startit.chatservice.entity.UserEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
-public interface MessageRepo extends ReactiveCrudRepository<MessageEntity, Long> {
-    Flux<MessageEntity> findByChatId(Long chatId, Pageable pageable);
+public interface UserRepo extends ReactiveCrudRepository<UserEntity, Long> {
+
+    Flux<MessageEntity> findByUsername(String username);
 }

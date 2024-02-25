@@ -1,4 +1,4 @@
-package com.startit.userservice.entity;
+package com.startit.itemservice.entity;
 
 import com.startit.shared.transfer.Role;
 import jakarta.persistence.*;
@@ -6,11 +6,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "users_item_ms")
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)

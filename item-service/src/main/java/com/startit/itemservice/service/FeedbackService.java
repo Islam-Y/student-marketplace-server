@@ -3,16 +3,22 @@ package com.startit.itemservice.service;
 import com.startit.itemservice.entity.FeedbackEntity;
 import com.startit.itemservice.exception.BadDataException;
 import com.startit.itemservice.mapper.FeedbackMapper;
+import com.startit.itemservice.mapper.UserMapper;
 import com.startit.itemservice.repository.FeedbackRepo;
 import com.startit.itemservice.repository.ItemRepo;
+import com.startit.itemservice.repository.UserRepo;
 import com.startit.itemservice.transfer.Feedback;
+import com.startit.shared.transfer.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class FeedbackService {
 
@@ -20,7 +26,7 @@ public class FeedbackService {
 
     private final ItemRepo itemRepo;
 
-    private final UserService userService;
+    private final UserRepo userRepo;
 
     private static final FeedbackMapper MAPPER = FeedbackMapper.INSTANCE;
 
@@ -31,7 +37,7 @@ public class FeedbackService {
         entity.setItem(
                 itemRepo.findById(feedback.getItemId()).orElseThrow());
         entity.setCustomerId(
-                userService.findByUsername(username).orElseThrow().getId()
+                userRepo.findByUsername(username).orElseThrow().getId()
         );
 
         if (entity.getItem().getSellerId().equals(entity.getCustomerId()))
@@ -51,5 +57,16 @@ public class FeedbackService {
         return repo.findAllByCustomerId(userId, pageable).stream()
                 .map(MAPPER::toDto)
                 .toList();
+    }
+
+    @KafkaListener(
+            topics = "user-creation",
+            containerFactory = "userKafkaListenerContainerFactory",
+            groupId = "feedback")
+    public void listenKafka(User user) {
+        log.info("Received Message in group feedback: {} ", user);
+        var userEntity = UserMapper.INSTANCE.toEntity(user);
+        userRepo.save(userEntity);
+        var saved = userRepo.findByUsername("bada1012");
     }
 }

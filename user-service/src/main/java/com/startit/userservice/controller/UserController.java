@@ -1,6 +1,7 @@
 package com.startit.userservice.controller;
 
 import com.startit.userservice.service.UserService;
+import com.startit.shared.transfer.User;
 import com.startit.userservice.transfer.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

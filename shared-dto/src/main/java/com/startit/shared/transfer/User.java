@@ -1,4 +1,4 @@
-package com.startit.chatservice.transfer;
+package com.startit.shared.transfer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

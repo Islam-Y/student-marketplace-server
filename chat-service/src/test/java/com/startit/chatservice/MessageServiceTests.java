@@ -1,14 +1,16 @@
 package com.startit.chatservice;
 
 import com.startit.chatservice.entity.MessageEntity;
+import com.startit.chatservice.entity.UserEntity;
 import com.startit.chatservice.mapper.ChatMapper;
 import com.startit.chatservice.repository.ChatRepo;
 import com.startit.chatservice.repository.MessageRepo;
+import com.startit.chatservice.repository.UserRepo;
 import com.startit.chatservice.service.MessageService;
 import com.startit.chatservice.service.UserService;
 import com.startit.chatservice.transfer.Chat;
 import com.startit.chatservice.transfer.Message;
-import com.startit.chatservice.transfer.User;
+import com.startit.shared.transfer.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -33,7 +35,7 @@ public class MessageServiceTests {
     ChatRepo chatRepo;
 
     @Mock
-    UserService userService;
+    UserRepo userServiceClient;
 
     @InjectMocks
     MessageService messageService;
@@ -47,12 +49,12 @@ public class MessageServiceTests {
         Message message = new Message();
         Chat chat = new Chat();
         chat.setId(chatId);
-        User sender = new User();
+        UserEntity sender = new UserEntity();
         sender.setId(123L);
         MessageEntity messageEntity = new MessageEntity();
 
         when(chatRepo.findById(chatId)).thenReturn(Mono.just(MAPPER.toEntity(chat)));
-        when(userService.getUser(message.getSenderId())).thenReturn(Optional.of(sender));
+        when(userServiceClient.findById(message.getSenderId())).thenReturn(Mono.just(sender));
         when(repo.save(messageEntity)).thenReturn(Mono.just(messageEntity));
 
         // Act
