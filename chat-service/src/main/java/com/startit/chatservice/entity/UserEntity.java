@@ -2,11 +2,12 @@ package com.startit.chatservice.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @Table(name = "users_chat_ms")
-public class UserEntity {
+public class UserEntity implements Persistable<Long> {
 
     @Id
     private Long id;
@@ -16,4 +17,9 @@ public class UserEntity {
     private String familyName;
     private Integer isuNumber;
     private String role;
+
+    @Override
+    public boolean isNew() {
+        return true;
+    }
 }

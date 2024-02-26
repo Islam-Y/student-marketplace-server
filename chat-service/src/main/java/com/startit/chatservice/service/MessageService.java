@@ -25,6 +25,7 @@ public class MessageService {
     private final UserRepo userRepo;
 
     private static final MessageMapper MAPPER = MessageMapper.INSTANCE;
+    private static final UserMapper USER_MAPPER = UserMapper.INSTANCE;
 
     public Mono<Message> save(Long chatId, Message message) {
         return Mono.zip(
@@ -51,8 +52,8 @@ public class MessageService {
             containerFactory = "userKafkaListenerContainerFactory",
             groupId = "chat")
     public void listenKafka(User user) {
-        log.info("Received Message in group chat: {} ", user);
-        var userEntity = UserMapper.INSTANCE.toEntity(user);
-        var isSaved = userRepo.save(userEntity).block();
+        userRepo.save(USER_MAPPER.toEntity(user))
+                .doOnError(error -> log.error("An error occurred while saving received user: {}", user, error))
+                .subscribe(savedUser -> log.info("Received and saved User in group chat: {} ", savedUser));
     }
 }
