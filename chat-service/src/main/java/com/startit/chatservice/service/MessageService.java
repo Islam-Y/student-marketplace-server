@@ -1,6 +1,5 @@
 package com.startit.chatservice.service;
 
-import com.startit.chatservice.entity.MessageEntity;
 import com.startit.chatservice.mapper.MessageMapper;
 import com.startit.chatservice.repository.ChatRepo;
 import com.startit.chatservice.repository.MessageRepo;
@@ -17,19 +16,19 @@ public class MessageService {
 
     private final MessageRepo repo;
     private final ChatRepo chatRepo;
-    private final UserServiceClient userServiceClient;
+    private final UserService userService;
 
     private static final MessageMapper MAPPER = MessageMapper.INSTANCE;
 
     public Mono<Message> save(Long chatId, Message message) {
         return Mono.zip(
                         chatRepo.findById(chatId),
-                        Mono.fromCallable(() -> userServiceClient.getUser(message.getSenderId()))
+                        Mono.fromCallable(() -> userService.getUser(message.getSenderId()))
                 )
                 .map(tuple -> {
                     var entity = MAPPER.toEntity(message);
                     entity.setChatId(tuple.getT1().getId());
-                    entity.setSenderId(tuple.getT2().getId());
+                    entity.setSenderId(tuple.getT2().orElseThrow().getId());
                     return entity;
                 })
                 .flatMap(repo::save)

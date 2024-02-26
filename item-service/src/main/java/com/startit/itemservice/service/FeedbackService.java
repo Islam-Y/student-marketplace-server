@@ -7,7 +7,6 @@ import com.startit.itemservice.repository.FeedbackRepo;
 import com.startit.itemservice.repository.ItemRepo;
 import com.startit.itemservice.transfer.Feedback;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,7 @@ public class FeedbackService {
 
     private final ItemRepo itemRepo;
 
-    private final UserServiceClient userServiceClient;
+    private final UserService userService;
 
     private static final FeedbackMapper MAPPER = FeedbackMapper.INSTANCE;
 
@@ -32,7 +31,7 @@ public class FeedbackService {
         entity.setItem(
                 itemRepo.findById(feedback.getItemId()).orElseThrow());
         entity.setCustomerId(
-                userServiceClient.findByUsername(username).orElseThrow().getId()
+                userService.findByUsername(username).orElseThrow().getId()
         );
 
         if (entity.getItem().getSellerId().equals(entity.getCustomerId()))

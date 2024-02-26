@@ -19,7 +19,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @CircuitBreaker(name = "registerUser", fallbackMethod = "registerFallback")
     @PostMapping("/register")
     public ResponseEntity<Object> registration(@RequestBody Credentials request) {
         try {
@@ -29,15 +28,10 @@ public class AuthController {
         } catch (UserExistsException e) {
             return ResponseEntity.status(409).body("Пользователь существует");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
-    public ResponseEntity<Object> registerFallback(Exception e) {
-        return ResponseEntity.internalServerError().body("Registration service unavailable");
-    }
-
-    @CircuitBreaker(name = "loginUser", fallbackMethod = "loginFallback")
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody Credentials request) {
         try {
@@ -49,9 +43,5 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    public ResponseEntity<Object> loginFallback(Exception e) {
-        return ResponseEntity.internalServerError().body("Login service unavailable");
     }
 }

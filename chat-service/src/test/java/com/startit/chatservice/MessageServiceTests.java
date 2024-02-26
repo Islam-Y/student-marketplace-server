@@ -1,13 +1,11 @@
 package com.startit.chatservice;
 
-import com.startit.chatservice.entity.ChatEntity;
 import com.startit.chatservice.entity.MessageEntity;
 import com.startit.chatservice.mapper.ChatMapper;
-import com.startit.chatservice.mapper.MessageMapper;
 import com.startit.chatservice.repository.ChatRepo;
 import com.startit.chatservice.repository.MessageRepo;
 import com.startit.chatservice.service.MessageService;
-import com.startit.chatservice.service.UserServiceClient;
+import com.startit.chatservice.service.UserService;
 import com.startit.chatservice.transfer.Chat;
 import com.startit.chatservice.transfer.Message;
 import com.startit.chatservice.transfer.User;
@@ -16,15 +14,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +33,7 @@ public class MessageServiceTests {
     ChatRepo chatRepo;
 
     @Mock
-    UserServiceClient userServiceClient;
+    UserService userService;
 
     @InjectMocks
     MessageService messageService;
@@ -58,7 +52,7 @@ public class MessageServiceTests {
         MessageEntity messageEntity = new MessageEntity();
 
         when(chatRepo.findById(chatId)).thenReturn(Mono.just(MAPPER.toEntity(chat)));
-        when(userServiceClient.getUser(message.getSenderId())).thenReturn(sender);
+        when(userService.getUser(message.getSenderId())).thenReturn(Optional.of(sender));
         when(repo.save(messageEntity)).thenReturn(Mono.just(messageEntity));
 
         // Act

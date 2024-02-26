@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @FeignClient(name = "user-service")
 public interface UserServiceClient {
 
     @GetMapping(value = "/api/v1/user/{id}")
-    User getUser(@PathVariable Long id);
+    Optional<User> getUser(@PathVariable Long id);
 }

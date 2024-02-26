@@ -3,7 +3,7 @@ package com.startit.chatservice;
 import com.startit.chatservice.entity.ChatEntity;
 import com.startit.chatservice.repository.ChatRepo;
 import com.startit.chatservice.service.ChatService;
-import com.startit.chatservice.service.ItemServiceClient;
+import com.startit.chatservice.service.ItemService;
 import com.startit.chatservice.transfer.Chat;
 import com.startit.chatservice.transfer.Item;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class ChatServiceTests {
     ChatRepo repo;
 
     @Mock
-    ItemServiceClient itemServiceClient;
+    ItemService itemService;
 
     @InjectMocks
     ChatService chatService;
@@ -62,7 +62,7 @@ public class ChatServiceTests {
         ChatEntity chatEntity = new ChatEntity();
         List<Item> userItems = List.of(item);
 
-        when(itemServiceClient.getItemByUser(userId, pageable)).thenReturn(new PageImpl<>(userItems));
+        when(itemService.getItemByUser(userId, pageable)).thenReturn(new PageImpl<>(userItems));
         when(repo.findByItemId(1L, pageable)).thenReturn(Flux.just(chatEntity));
         when(repo.findByCustomerId(userId, pageable)).thenReturn(Flux.just(chatEntity));
 

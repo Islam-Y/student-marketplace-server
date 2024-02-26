@@ -12,7 +12,7 @@ public interface UserServiceClient {
     @GetMapping(value = "/api/v1/user/username/{username}")
     Optional<User> findByUsername(@PathVariable String username);
     @GetMapping(value = "/api/v1/user/exists/{id}")
-    public Boolean userExists(@PathVariable Long id);
+    Boolean userExists(@PathVariable Long id);
     @GetMapping(value = "/api/v1/user/{id}")
-    public User getUser(@PathVariable Long id);
+    Optional<User> getUser(@PathVariable Long id);
 }

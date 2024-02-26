@@ -16,11 +16,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    private final UserServiceClient userServiceClient;
+    private final UserService userService;
 
     public AuthResponse register(Credentials request) {
-        var reqUser = userServiceClient.findByUsername(request.getUser().getUsername());
-
+        var reqUser = userService.findByUsername(request.getUser().getUsername());
         if (reqUser.isPresent()) {
             throw new UserExistsException("Пользователь с таким именем уже существует");
         } else if (request.getUser().getUsername().length() < 3) {
@@ -31,7 +30,9 @@ public class AuthService {
 
         var user = request.getUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userServiceClient.save(user);
+        if (userService.save(user) == 0) {
+            throw new RuntimeException("Пользователь не смог сохранится в системе");
+        }
 
         var jwtToken = jwtService.generateToken(user.getUsername());
         var refreshToken = jwtService.generateRefreshToken(user.getUsername());
@@ -44,7 +45,7 @@ public class AuthService {
     }
 
     public AuthResponse login(Credentials request) {
-        var reqUser = userServiceClient.findByUsername(request.getUser().getUsername());
+        var reqUser = userService.findByUsername(request.getUser().getUsername());
         if (reqUser.isEmpty())
             throw new UserExistsException("Пользователя под таким именем не существует");
 

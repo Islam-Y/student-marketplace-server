@@ -1,17 +1,12 @@
 package com.startit.userservice.controller;
 
-import com.startit.userservice.service.ChatServiceClient;
 import com.startit.userservice.service.UserService;
-import com.startit.userservice.transfer.Chat;
 import com.startit.userservice.transfer.User;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,7 +15,6 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService service;
-    private final ChatServiceClient chatService;
 
     @PostMapping("/save")
     public Mono<ResponseEntity<Long>> saveUser(@RequestBody User user) {

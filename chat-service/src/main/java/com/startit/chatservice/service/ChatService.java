@@ -18,7 +18,7 @@ import java.util.List;
 public class ChatService {
 
     private final ChatRepo repo;
-    private final ItemServiceClient itemServiceClient;
+    private final ItemService itemService;
 
     private static final ChatMapper MAPPER = ChatMapper.INSTANCE;
 
@@ -28,7 +28,7 @@ public class ChatService {
     }
 
     public Flux<Chat> getUserChats(Long userId, Pageable pageable) {
-        return Flux.fromStream(itemServiceClient.getItemByUser(userId, pageable).stream())
+        return Flux.fromStream(itemService.getItemByUser(userId, pageable).stream())
                 .flatMap(item -> repo.findByItemId(item.getId(), pageable)
                         .onErrorResume(Exception.class, e -> Flux.empty()))
                 .mergeWith(repo.findByCustomerId(userId, pageable)
