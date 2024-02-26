@@ -17,6 +17,7 @@
         <module>chat-service</module>
         <module>cloud-config-server</module>
         <module>gateway-service</module>
+        <module>object-service</module>
     </modules>
 
 </project>
