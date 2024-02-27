@@ -31,6 +31,11 @@ public class ObjectService {
             minioService.upload(path, file.getInputStream(), file.getContentType());
             var metadata = minioService.getMetadata(path);
             log.info("this file {} storage in bucket: {} on date: {}", metadata.name(), metadata.bucketName(), metadata.createdTime());
+
+            if (photoRepo.findByItemId(itemId).isPresent()) {
+                throw new IllegalStateException("The item with given itemId already has an image associated!");
+            }
+
             var photoEntity = new PhotoEntity();
             photoEntity.setFilename(metadata.name());
             photoEntity.setItemId(itemId);
