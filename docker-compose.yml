@@ -1,25 +1,124 @@
-version: '3'
+version: '3.7'
+
 services:
-#  app:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
-#      - SPRING_DATASOURCE_USERNAME=fost
-#      - SPRING_DATASOURCE_PASSWORD=fost
-#      - SPRING_FLYWAY_URL=jdbc:postgresql://db:5432/studs
-#      - SPRING_FLYWAY_USER=fost
-#      - SPRING_FLYWAY_PASSWORD=fost
-#    depends_on:
-#      - db
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U fost -h db" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  eureka-server:
+    build:
+      context: eureka-server
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8761:8761"
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    healthcheck:
+      test: curl --fail --silent localhost:8761/actuator/health | grep UP || exit 1
+      interval: 5s
+      retries: 20
+
+  cloud-config-server:
+    build:
+      context: cloud-config-server
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8888:8888"
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail --silent localhost:8888/actuator/health | grep UP || exit 1
+      interval: 5s
+      retries: 20
+
+  auth-service:
+    build:
+      context: auth-service
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8081:8081"
+    environment:
+      - spring.config.import=optional:configserver:http://cloud-config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      cloud-config-server:
+        condition: service_healthy
+
+  chat-service:
+    build:
+      context: chat-service
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8082:8082"
+    environment:
+      - spring.config.import=optional:configserver:http://cloud-config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - SPRING_R2DBC_URL=r2dbc:postgresql://db:5432/studs
+      - SPRING_R2DBC_USERNAME=fost
+      - SPRING_R2DBC_PASSWORD=fost
+      - SPRING_FLYWAY_URL=jdbc:postgresql://db:5432/studs
+      - SPRING_FLYWAY_USER=fost
+      - SPRING_FLYWAY_PASSWORD=fost
+    depends_on:
+      cloud-config-server:
+        condition: service_healthy
+      db:
+        condition: service_started
+
+  gateway-service:
+    build:
+      context: gateway-service
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8083:8083"
+    environment:
+      - spring.config.import=optional:configserver:http://cloud-config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      cloud-config-server:
+        condition: service_healthy
+
+  item-service:
+    build:
+      context: item-service
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8084:8084"
+    environment:
+      - spring.config.import=optional:configserver:http://cloud-config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
+      - SPRING_DATASOURCE_USERNAME=fost
+      - SPRING_DATASOURCE_PASSWORD=fost
+    depends_on:
+      cloud-config-server:
+        condition: service_healthy
+      db:
+        condition: service_started
+
+  user-service:
+    build:
+      context: user-service
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8085:8085"
+    environment:
+      - spring.config.import=optional:configserver:http://cloud-config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
+      - SPRING_DATASOURCE_USERNAME=fost
+      - SPRING_DATASOURCE_PASSWORD=fost
+    depends_on:
+      cloud-config-server:
+        condition: service_healthy
+      db:
+        condition: service_started
 
   db:
     image: postgres

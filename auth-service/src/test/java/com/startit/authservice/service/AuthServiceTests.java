@@ -5,7 +5,6 @@ import com.startit.authservice.jwt.JwtService;
 import com.startit.authservice.transfer.AuthResponse;
 import com.startit.authservice.transfer.Credentials;
 import com.startit.authservice.transfer.User;
-import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,7 +29,7 @@ public class AuthServiceTests {
     JwtService jwtService;
 
     @Mock
-    UserServiceClient userServiceClient;
+    UserService userService;
 
     @InjectMocks
     AuthService authService;
@@ -40,7 +39,8 @@ public class AuthServiceTests {
         // Arrange
         Credentials credentials = new Credentials(new User("testUser", "password"), "password");
         AuthResponse expectedResponse = new AuthResponse(true, "accessToken", "refreshToken");
-        when(userServiceClient.findByUsername("testUser")).thenReturn(Optional.empty());
+        when(userService.findByUsername("testUser")).thenReturn(Optional.empty());
+        when(userService.save(credentials.getUser())).thenReturn(5L);
         when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
         when(jwtService.generateToken("testUser")).thenReturn("accessToken");
         when(jwtService.generateRefreshToken("testUser")).thenReturn("refreshToken");
@@ -58,7 +58,7 @@ public class AuthServiceTests {
         Credentials credentials = new Credentials(new User("testUser", "password"), "password");
         AuthResponse expectedResponse = new AuthResponse("accessToken", "refreshToken");
         User existingUser = new User("testUser", "encodedPassword");
-        when(userServiceClient.findByUsername("testUser")).thenReturn(Optional.of(existingUser));
+        when(userService.findByUsername("testUser")).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
         when(jwtService.generateToken("testUser")).thenReturn("accessToken");
         when(jwtService.generateRefreshToken("testUser")).thenReturn("refreshToken");
@@ -74,9 +74,20 @@ public class AuthServiceTests {
     public void testRegisterUser_UserExistsException() {
         // Arrange
         Credentials credentials = new Credentials(new User("existingUser", "password"), "password");
-        when(userServiceClient.findByUsername("existingUser")).thenReturn(Optional.of(new User("existingUser", "encodedPassword")));
+        when(userService.findByUsername("existingUser")).thenReturn(Optional.of(new User("existingUser", "encodedPassword")));
 
         // Act & Assert
         assertThrows(UserExistsException.class, () -> authService.register(credentials));
+    }
+
+    @Test
+    public void testRegisterUser_UserNotSavedException() {
+        // Arrange
+        Credentials credentials = new Credentials(new User("existingUser", "password"), "password");
+        when(userService.findByUsername("existingUser")).thenReturn(Optional.of(new User("existingUser", "encodedPassword")));
+        when(userService.save(credentials.getUser())).thenReturn(0L);
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> authService.register(credentials));
     }
 }
