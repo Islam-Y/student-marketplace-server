@@ -22,14 +22,18 @@ public class ObjectController {
     private final ObjectService fileStorageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<FileResponse> fileUpload(@RequestPart("photo") MultipartFile file,
+    public ResponseEntity<Object> fileUpload(@RequestPart("photo") MultipartFile file,
                                                    @RequestPart("itemId") String itemId) {
-        FileResponse response = fileStorageService.addFile(file, itemId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            FileResponse response = fileStorageService.addFile(file, itemId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
     @GetMapping("/download/{itemId}")
-    public ResponseEntity<InputStreamResource> downloadFile(@PathVariable String itemId) {
+    public ResponseEntity<Object> downloadFile(@PathVariable String itemId) {
         try {
             FileResponse source = fileStorageService.getFile(itemId);
             return ResponseEntity
@@ -39,7 +43,7 @@ public class ObjectController {
                     .header("Content-disposition", "attachment; filename=" + source.getFilename())
                     .body(source.getStream());
         } catch (MinioException e) {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }

@@ -3,16 +3,22 @@ package org.startit.objectservice.config;
 import com.jlefebure.spring.boot.minio.MinioConfigurationProperties;
 import com.jlefebure.spring.boot.minio.MinioService;
 import io.minio.MinioClient;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.minio.errors.MinioException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.startit.objectservice.decorator.FileResponseDecorator;
 import org.startit.objectservice.mapper.FileResponseMapper;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Configuration
 public class MinioConfig {
+    @Value("${spring.minio.bucket}")
+    private String bucketName;
     @Bean
     public MinioService getMinioService() {
         return new MinioService();
@@ -21,24 +27,24 @@ public class MinioConfig {
     @Bean
     public MinioClient minioClient() {
         try {
-            return new MinioClient(
+            var client = new MinioClient(
                     "http://127.0.0.1:9000",
                     "fost",
                     "fostfost"
             );
-        } catch (InvalidEndpointException | InvalidPortException e) {
+            if (!client.bucketExists(bucketName))
+                client.makeBucket(bucketName);
+            return client;
+        } catch (MinioException |
+                 InvalidKeyException |
+                 IOException | NoSuchAlgorithmException |
+                 XmlPullParserException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Bean
     public MinioConfigurationProperties minioProperties() {
-        var properties = new MinioConfigurationProperties();
-        properties.setCreateBucket(true);
-        properties.setUrl("http://127.0.0.1:9000");
-        properties.setBucket("test");
-        properties.setAccessKey("fost");
-        properties.setSecretKey("fostfost");
         return new MinioConfigurationProperties();
     }
 
