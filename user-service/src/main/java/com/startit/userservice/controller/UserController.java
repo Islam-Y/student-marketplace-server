@@ -3,12 +3,14 @@ package com.startit.userservice.controller;
 import com.startit.userservice.service.UserService;
 import com.startit.userservice.transfer.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class UserController {
 
     @PostMapping("/save")
     public Mono<ResponseEntity<Long>> saveUser(@RequestBody User user) {
+        log.info("User {} saved", user.getUsername());
         return service.save(user)
                 .map(ResponseEntity::ok);
     }
