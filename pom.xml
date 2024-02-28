@@ -18,6 +18,7 @@
         <module>cloud-config-server</module>
         <module>gateway-service</module>
         <module>object-service</module>
+        <module>shared-dto</module>
     </modules>
 
 </project>

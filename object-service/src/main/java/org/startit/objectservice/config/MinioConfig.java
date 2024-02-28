@@ -17,8 +17,19 @@ import java.security.NoSuchAlgorithmException;
 
 @Configuration
 public class MinioConfig {
+
+    @Value("${spring.minio.accessKey}")
+    private String minioAccessKey;
+
+    @Value("${spring.minio.secretKey}")
+    private String minioSecretKey;
+
     @Value("${spring.minio.bucket}")
     private String bucketName;
+
+    @Value("${spring.minio.url}")
+    private String minioEndpoint;
+
     @Bean
     public MinioService getMinioService() {
         return new MinioService();
@@ -28,9 +39,9 @@ public class MinioConfig {
     public MinioClient minioClient() {
         try {
             var client = new MinioClient(
-                    "http://127.0.0.1:9000",
-                    "fost",
-                    "fostfost"
+                    minioEndpoint,
+                    minioAccessKey,
+                    minioSecretKey
             );
             if (!client.bucketExists(bucketName))
                 client.makeBucket(bucketName);

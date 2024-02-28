@@ -36,7 +36,7 @@ services:
     build:
       context: auth-service
       dockerfile: Dockerfile
-    restart: on-failure
+#    restart: on-failure
     ports:
       - "8081:8081"
     environment:
@@ -50,18 +50,15 @@ services:
     build:
       context: chat-service
       dockerfile: Dockerfile
-    restart: on-failure
+#    restart: on-failure
     ports:
       - "8082:8082"
     environment:
       - spring.config.import=optional:configserver:http://cloud-config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - SPRING_R2DBC_URL=r2dbc:postgresql://db:5432/studs
-      - SPRING_R2DBC_USERNAME=fost
-      - SPRING_R2DBC_PASSWORD=fost
       - SPRING_FLYWAY_URL=jdbc:postgresql://db:5432/studs
-      - SPRING_FLYWAY_USER=fost
-      - SPRING_FLYWAY_PASSWORD=fost
+      - kafka.bootstrap-servers=kafka:9092
     depends_on:
       cloud-config-server:
         condition: service_healthy
@@ -72,7 +69,7 @@ services:
     build:
       context: gateway-service
       dockerfile: Dockerfile
-    restart: on-failure
+#    restart: on-failure
     ports:
       - "8083:8083"
     environment:
@@ -86,15 +83,14 @@ services:
     build:
       context: item-service
       dockerfile: Dockerfile
-    restart: on-failure
+#    restart: on-failure
     ports:
       - "8084:8084"
     environment:
       - spring.config.import=optional:configserver:http://cloud-config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
-      - SPRING_DATASOURCE_USERNAME=fost
-      - SPRING_DATASOURCE_PASSWORD=fost
+      - kafka.bootstrap-servers=kafka:9092
     depends_on:
       cloud-config-server:
         condition: service_healthy
@@ -105,15 +101,32 @@ services:
     build:
       context: user-service
       dockerfile: Dockerfile
-    restart: on-failure
+#    restart: on-failure
     ports:
       - "8085:8085"
     environment:
       - spring.config.import=optional:configserver:http://cloud-config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
-      - SPRING_DATASOURCE_USERNAME=fost
-      - SPRING_DATASOURCE_PASSWORD=fost
+      - kafka.bootstrap-servers=kafka:9092
+    depends_on:
+      cloud-config-server:
+        condition: service_healthy
+      db:
+        condition: service_started
+
+  object-service:
+    build:
+      context: object-service
+      dockerfile: Dockerfile
+#    restart: on-failure
+    ports:
+      - "8086:8086"
+    environment:
+      - spring.config.import=optional:configserver:http://cloud-config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/studs
+      - SPRING_MINIO_URL=http://minio:9000
     depends_on:
       cloud-config-server:
         condition: service_healthy
@@ -140,6 +153,28 @@ services:
       MINIO_ROOT_USER: "fost"
       MINIO_ROOT_PASSWORD: "fostfost"
     command: server --console-address ":9001" /data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
 volumes:
   minio_storage: {}

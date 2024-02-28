@@ -7,19 +7,11 @@ import com.startit.chatservice.repository.ChatRepo;
 import com.startit.chatservice.repository.MessageRepo;
 import com.startit.chatservice.repository.UserRepo;
 import com.startit.chatservice.service.MessageService;
-import com.startit.chatservice.service.UserService;
 import com.startit.chatservice.transfer.Chat;
 import com.startit.chatservice.transfer.Message;
-import com.startit.shared.transfer.User;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;

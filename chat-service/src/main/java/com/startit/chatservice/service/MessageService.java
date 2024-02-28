@@ -35,7 +35,7 @@ public class MessageService {
                 .map(tuple -> {
                     var entity = MAPPER.toEntity(message);
                     entity.setChatId(tuple.getT1().getId());
-                    entity.setSenderId(tuple.getT2().orElseThrow().getId());
+                    entity.setSenderId(tuple.getT2().getId());
                     return entity;
                 })
                 .flatMap(repo::save)

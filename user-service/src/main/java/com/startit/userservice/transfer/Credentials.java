@@ -1,5 +1,6 @@
 package com.startit.userservice.transfer;
 
+import com.startit.shared.transfer.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
