@@ -1,6 +1,7 @@
 package com.startit.itemservice.service;
 
 import com.startit.itemservice.entity.ItemEntity;
+import com.startit.itemservice.exception.BadDataException;
 import com.startit.itemservice.mapper.ItemMapper;
 import com.startit.itemservice.repository.CategoryRepo;
 import com.startit.itemservice.repository.ItemRepo;
@@ -31,13 +32,19 @@ public class ItemService {
     public long save(Item item) {
         ItemEntity itemEntity = MAPPER.toEntity(item);
 
-        itemEntity.setStatus( statusRepo.findById(item.getStatusId()).orElseThrow() );
+        itemEntity.setStatus( statusRepo.findById(item.getStatusId()).orElseThrow(
+                () -> new BadDataException("Статус " + item.getStatusId() + " не найден")
+        ));
         itemEntity.setCategories(
                 item.getCategoriesIds().stream().map(
-                        category -> categoryRepo.findById(category).orElseThrow()
+                        category -> categoryRepo.findById(category).orElseThrow(
+                                () -> new BadDataException("Категория " + category + " не найдена")
+                        )
                 ).toList()
         );
-        itemEntity.setLocation( locationRepo.findById(item.getLocationId()).orElseThrow() );
+        itemEntity.setLocation( locationRepo.findById(item.getLocationId()).orElseThrow(
+                () -> new BadDataException("Локация " + item.getStatusId() + " не найдена")
+        ));
 
         return repo.save(itemEntity).getId();
     }

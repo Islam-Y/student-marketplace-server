@@ -7,5 +7,4 @@ public class Feedback {
     private Mark mark;
     private String text;
     private Long itemId;
-    private Long customerId;
 }
