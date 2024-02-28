@@ -2,12 +2,12 @@ package com.startit.itemservice.service;
 
 import com.startit.itemservice.entity.FeedbackEntity;
 import com.startit.itemservice.entity.ItemEntity;
-import com.startit.itemservice.exception.BadDataException;
+import com.startit.itemservice.entity.UserEntity;
 import com.startit.itemservice.repository.FeedbackRepo;
 import com.startit.itemservice.repository.ItemRepo;
+import com.startit.itemservice.repository.UserRepo;
 import com.startit.itemservice.transfer.Feedback;
 import com.startit.itemservice.transfer.Mark;
-import com.startit.itemservice.transfer.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,13 +28,13 @@ import static org.mockito.Mockito.when;
 public class FeedbackServiceTests {
 
     @Mock
-    FeedbackRepo feedbackRepo;
+    private FeedbackRepo feedbackRepo;
 
     @Mock
     private ItemRepo itemRepo;
 
     @Mock
-    private UserService userService;
+    private UserRepo userRepo;
 
     @InjectMocks
     private FeedbackService feedbackService;
@@ -49,11 +49,11 @@ public class FeedbackServiceTests {
         var itemEntity = new ItemEntity();
         itemEntity.setSellerId(1L);
 
-        var user = new User();
+        var user = new UserEntity();
         user.setId(2L);
 
         when(itemRepo.findById(feedback.getItemId())).thenReturn(Optional.of(itemEntity));
-        when(userService.findByUsername("customer")).thenReturn(Optional.of(user));
+        when(userRepo.findByUsername("customer")).thenReturn(Optional.of(user));
         when(feedbackRepo.save(any(FeedbackEntity.class))).thenReturn(new FeedbackEntity());
 
         assertDoesNotThrow(() -> feedbackService.save("customer", feedback));
@@ -68,11 +68,11 @@ public class FeedbackServiceTests {
         var itemEntity = new ItemEntity();
         itemEntity.setSellerId(2L);
 
-        var user = new User();
+        var user = new UserEntity();
         user.setId(2L);
 
         when(itemRepo.findById(feedback.getItemId())).thenReturn(Optional.of(itemEntity));
-        when(userService.findByUsername("customer")).thenReturn(Optional.of(user));
+        when(userRepo.findByUsername("customer")).thenReturn(Optional.of(user));
         when(itemRepo.findById(feedback.getItemId())).thenReturn(Optional.of(itemEntity));
 
         assertThrows(NoSuchElementException.class, () -> feedbackService.save("seller", feedback));

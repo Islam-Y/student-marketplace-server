@@ -2,15 +2,13 @@ package com.startit.userservice.service;
 
 import com.startit.userservice.entity.UserEntity;
 import com.startit.userservice.repository.UserRepo;
-import com.startit.userservice.transfer.Role;
-import com.startit.userservice.transfer.User;
+import com.startit.shared.transfer.User;
+import com.startit.shared.transfer.Role;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
@@ -32,7 +30,7 @@ public class UserServiceTests {
 
     @Test
     public void when_save_user_it_should_return_id_set_by_repo() {
-        User user = new User();
+        var user = new User();
         user.setId(null);
         user.setName("Example");
         user.setUsername("Example_Username");
