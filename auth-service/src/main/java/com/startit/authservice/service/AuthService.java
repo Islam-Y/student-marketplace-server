@@ -29,7 +29,7 @@ public class AuthService {
         }
 
         var user = request.getUser();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         if (userService.save(user) == 0) {
             throw new RuntimeException("Пользователь не смог сохранится в системе");
         }
