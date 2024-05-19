@@ -23,18 +23,18 @@ public class ItemEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "status")
     private StatusEntity status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "location")
     private LocationEntity location;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "item_category",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
+            joinColumns = @JoinColumn(name = "item"),
+            inverseJoinColumns = @JoinColumn(name = "category")
     )
     private List<CategoryEntity> categories;
 

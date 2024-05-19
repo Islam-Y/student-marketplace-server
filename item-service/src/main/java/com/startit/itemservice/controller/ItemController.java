@@ -19,8 +19,6 @@ public class ItemController {
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody Item item) {
-        if (item.getId() != null)
-            return ResponseEntity.badRequest().body("Указано лишнее поле : id!");
         if (item.getName() == null)
             return ResponseEntity.badRequest().body("Пропущено обязательное поле : name!");
         if (item.getPrice() == null)
@@ -45,11 +43,20 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchItem(@RequestBody SearchFilter searchFilter,
-                                                 Pageable pageable,
-                                                 HttpServletResponse response
+    public ResponseEntity<Object> searchItem(
+            String itemName,
+            Long categoryId,
+            Long locationId,
+            Long sellerId,
+            Pageable pageable,
+            HttpServletResponse response
     ) {
         try {
+            SearchFilter searchFilter = new SearchFilter();
+            searchFilter.setItemName(itemName);
+            searchFilter.setCategoryId(categoryId);
+            searchFilter.setLocationId(locationId);
+            searchFilter.setSellerId(sellerId);
             var result = service.searchItems(searchFilter, pageable);
             response.setHeader("X-Total-Count", String.valueOf(result.size()));
             return ResponseEntity.ok(result);
