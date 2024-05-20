@@ -20,8 +20,13 @@ public class AuthenticationFilter implements GatewayFilter {
     private final RouterValidator validator;
     private final JwtService jwtService;
 
+    @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        if (request.getURI().getPath().startsWith("/ws/")) {
+            // WebSocket handshake should be handled differently
+            return chain.filter(exchange);
+        }
 
         if (validator.isSecured.test(request)) {
             var authHeader = request.getHeaders().getOrEmpty("Authorization");
@@ -41,6 +46,8 @@ public class AuthenticationFilter implements GatewayFilter {
                 log.info("{}: JWT Token is not own-signed!", exchange.getRequest().getPath());
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
+
+            exchange.getAttributes().put("jwt", jwt);
         }
 
         log.info("{}: Filter passed!", exchange.getRequest().getPath());

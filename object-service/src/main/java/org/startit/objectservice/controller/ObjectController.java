@@ -32,8 +32,19 @@ public class ObjectController {
         }
     }
 
-    @GetMapping("/download/{itemId}")
-    public ResponseEntity<Object> downloadFile(@PathVariable String itemId) {
+    @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> fileUpdate(@RequestPart("photo") MultipartFile file,
+                                             @RequestPart("itemId") String itemId) {
+        try {
+            FileResponse response = fileStorageService.replaceFile(file, itemId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Object> downloadFile(String itemId) {
         try {
             FileResponse source = fileStorageService.getFile(itemId);
             return ResponseEntity

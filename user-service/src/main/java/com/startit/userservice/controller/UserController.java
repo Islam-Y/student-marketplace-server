@@ -19,10 +19,14 @@ public class UserController {
     private final UserService service;
 
     @PostMapping("/save")
-    public Mono<ResponseEntity<Long>> saveUser(@RequestBody User user) {
-        log.info("User {} saved", user.getUsername());
-        return service.save(user)
-                .map(ResponseEntity::ok);
+    public ResponseEntity<Object> saveUser(@RequestBody User user) {
+        try {
+            Long id = service.save(user);
+            log.info("User {} saved", user.getUsername());
+            return ResponseEntity.ok(id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")

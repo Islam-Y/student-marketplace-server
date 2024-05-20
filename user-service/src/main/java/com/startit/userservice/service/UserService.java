@@ -1,5 +1,6 @@
 package com.startit.userservice.service;
 
+import com.startit.shared.transfer.Role;
 import com.startit.shared.transfer.User;
 import com.startit.userservice.mapper.UserMapper;
 import com.startit.userservice.repository.UserRepo;
@@ -33,11 +34,12 @@ public class UserService {
         });
     }
 
-    public Mono<Long> save(User user) {
-        return Mono.fromCallable(() -> UserMapper.INSTANCE.toEntity(user))
-                .map(repo::save)
-                .doOnSuccess(savedUser -> sendMessage(UserMapper.INSTANCE.toDto(savedUser)))
-                .map(UserEntity::getId);
+    public Long save(User user) {
+        UserEntity userEntity = UserMapper.INSTANCE.toEntity(user);
+        userEntity.setRole(Role.SUPERUSER);
+        UserEntity savedUser = repo.save(userEntity);
+        sendMessage(UserMapper.INSTANCE.toDto(savedUser));
+        return savedUser.getId();
     }
 
     public Mono<Optional<User>> findById(Long id) {

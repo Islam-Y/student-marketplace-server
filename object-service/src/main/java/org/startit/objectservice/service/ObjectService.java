@@ -26,7 +26,7 @@ public class ObjectService {
     private final PhotoRepo photoRepo;
 
     public FileResponse addFile(MultipartFile file, String itemId) {
-        Path path = Path.of(file.getOriginalFilename());
+        Path path = Path.of(itemId + "_" + file.getOriginalFilename());
         try {
             minioService.upload(path, file.getInputStream(), file.getContentType());
             var metadata = minioService.getMetadata(path);
@@ -44,7 +44,25 @@ public class ObjectService {
         } catch (IOException | MinioException ex) {
             throw new IllegalStateException(ex.getMessage());
         }
+    }
 
+    public FileResponse replaceFile(MultipartFile file, String itemId) {
+        Path path = Path.of(itemId + "_" + file.getOriginalFilename());
+        try {
+            var photoEntity = photoRepo.findByItemId(itemId).orElseThrow();
+            var oldFilename = photoEntity.getFilename();
+            Path oldFilePath = Path.of(oldFilename);
+            minioService.remove(oldFilePath);
+            minioService.upload(path, file.getInputStream(), file.getContentType());
+            var metadata = minioService.getMetadata(path);
+            log.info("this file {} storage in bucket: {} on date: {}", metadata.name(), metadata.bucketName(), metadata.createdTime());
+
+            photoEntity.setFilename(metadata.name());
+            photoRepo.save(photoEntity);
+            return fileResponseMapper.fileAddResponse(metadata);
+        } catch (IOException | MinioException ex) {
+            throw new IllegalStateException(ex.getMessage());
+        }
     }
 
     public FileResponse getFile(String itemId) throws MinioException, NoSuchElementException {

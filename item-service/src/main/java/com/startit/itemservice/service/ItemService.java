@@ -3,21 +3,25 @@ package com.startit.itemservice.service;
 import com.startit.itemservice.entity.ItemEntity;
 import com.startit.itemservice.exception.BadDataException;
 import com.startit.itemservice.mapper.ItemMapper;
-import com.startit.itemservice.repository.CategoryRepo;
-import com.startit.itemservice.repository.ItemRepo;
-import com.startit.itemservice.repository.LocationRepo;
-import com.startit.itemservice.repository.StatusRepo;
+import com.startit.itemservice.mapper.UserMapper;
+import com.startit.itemservice.repository.*;
 import com.startit.itemservice.transfer.Item;
 import com.startit.itemservice.transfer.SearchFilter;
 import com.startit.itemservice.utils.ItemSpecification;
+import com.startit.shared.transfer.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ItemService {
@@ -26,6 +30,7 @@ public class ItemService {
     private final StatusRepo statusRepo;
     private final LocationRepo locationRepo;
     private final CategoryRepo categoryRepo;
+    private final UserRepo userRepo;
 
     private static final ItemMapper MAPPER = ItemMapper.INSTANCE;
 
@@ -49,16 +54,34 @@ public class ItemService {
         return repo.save(itemEntity).getId();
     }
 
+    public long update(Item item, String username) {
+        long userId = userRepo.findByUsername(username).orElseThrow().getId();
+        if (item.getSellerId() != userId) {
+            throw new BadDataException("Нельзя обновлять не ваши объявления!");
+        }
+        return save(item);
+    }
+
     public Optional<Item> findById(Long id) {
         return repo.findById(id).map(MAPPER::toDto);
     }
 
     public Page<Item> findBySellerId(Long id, Pageable pageable) {
-        return repo.findBySellerId(id, pageable).map(MAPPER::toDto);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("id").ascending()
+        );
+        return repo.findBySellerId(id, sortedPageable).map(MAPPER::toDto);
     }
 
     public List<Item> searchItems(SearchFilter searchFilter, Pageable pageable) {
-        return repo.findAll(ItemSpecification.withFilter(searchFilter), pageable).stream()
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("id").ascending()
+        );
+        return repo.findAll(ItemSpecification.withFilter(searchFilter), sortedPageable).stream()
                 .map(MAPPER::toDto)
                 .toList();
     }
@@ -67,5 +90,16 @@ public class ItemService {
         return repo.findAll(pageable).stream()
                 .map(MAPPER::toDto)
                 .toList();
+    }
+
+    @KafkaListener(
+            topics = "user-creation",
+            containerFactory = "userKafkaListenerContainerFactory",
+            groupId = "item")
+    public void listenKafka(User user) {
+        log.info("Received Message in group item: {} ", user);
+        var userEntity = UserMapper.INSTANCE.toEntity(user);
+        userRepo.save(userEntity);
+//        var saved = userRepo.findByUsername("bada1012");
     }
 }

@@ -23,9 +23,6 @@ public class UserEntity {
 
     private String familyName;
 
-    @Column(name = "isu_number", nullable = false, unique = true)
-    private Integer isuNumber;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

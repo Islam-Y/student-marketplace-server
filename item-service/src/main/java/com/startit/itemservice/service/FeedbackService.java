@@ -58,15 +58,4 @@ public class FeedbackService {
                 .map(MAPPER::toDto)
                 .toList();
     }
-
-    @KafkaListener(
-            topics = "user-creation",
-            containerFactory = "userKafkaListenerContainerFactory",
-            groupId = "feedback")
-    public void listenKafka(User user) {
-        log.info("Received Message in group feedback: {} ", user);
-        var userEntity = UserMapper.INSTANCE.toEntity(user);
-        userRepo.save(userEntity);
-        var saved = userRepo.findByUsername("bada1012");
-    }
 }

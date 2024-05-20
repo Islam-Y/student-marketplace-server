@@ -35,7 +35,6 @@ public class UserServiceTests {
         user.setName("Example");
         user.setUsername("Example_Username");
         user.setFamilyName("Example_FamilyName");
-        user.setIsuNumber(312502);
         user.setRole(Role.SELLER);
 
         var returnedEntity = new UserEntity();
@@ -43,11 +42,10 @@ public class UserServiceTests {
         returnedEntity.setName("Example");
         returnedEntity.setUsername("Example_Username");
         returnedEntity.setFamilyName("Example_FamilyName");
-        returnedEntity.setIsuNumber(312502);
         returnedEntity.setRole(Role.SELLER);
         when(repo.save(any(UserEntity.class))).thenReturn(returnedEntity);
 
-        Long createdUserId = service.save(user).block();
+        Long createdUserId = service.save(user);
 
         assertEquals(5L, createdUserId.longValue());
     }
@@ -59,7 +57,6 @@ public class UserServiceTests {
         returnedEntity.setName("Example");
         returnedEntity.setUsername("Example_Username");
         returnedEntity.setFamilyName("Example_FamilyName");
-        returnedEntity.setIsuNumber(312502);
         returnedEntity.setRole(Role.SELLER);
         when(repo.findById(5L)).thenReturn(Optional.of(returnedEntity));
 
@@ -71,7 +68,6 @@ public class UserServiceTests {
         assertEquals("Example", rawUser.getName());
         assertEquals("Example_Username", rawUser.getUsername());
         assertEquals("Example_FamilyName", rawUser.getFamilyName());
-        assertEquals(312502, rawUser.getIsuNumber().intValue());
         assertEquals(Role.SELLER, rawUser.getRole());
     }
 
@@ -82,7 +78,6 @@ public class UserServiceTests {
         returnedEntity.setName("Example");
         returnedEntity.setUsername("Example_Username");
         returnedEntity.setFamilyName("Example_FamilyName");
-        returnedEntity.setIsuNumber(312502);
         returnedEntity.setRole(Role.SELLER);
         when(repo.findByUsername("Example")).thenReturn(Optional.of(returnedEntity));
 
@@ -94,7 +89,6 @@ public class UserServiceTests {
         assertEquals("Example", rawUser.getName());
         assertEquals("Example_Username", rawUser.getUsername());
         assertEquals("Example_FamilyName", rawUser.getFamilyName());
-        assertEquals(312502, rawUser.getIsuNumber().intValue());
         assertEquals(Role.SELLER, rawUser.getRole());
     }
 }

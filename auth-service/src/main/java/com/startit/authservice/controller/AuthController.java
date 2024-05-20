@@ -3,6 +3,7 @@ package com.startit.authservice.controller;
 import com.startit.authservice.exception.BadRegistrationDataException;
 import com.startit.authservice.exception.UserExistsException;
 import com.startit.authservice.service.AuthService;
+import com.startit.authservice.transfer.AuthResponse;
 import com.startit.authservice.transfer.Credentials;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Object> registration(@RequestBody Credentials request) {
         try {
-            return ResponseEntity.ok(authService.register(request));
+            AuthResponse answer = authService.register(request);
+            return ResponseEntity.ok(answer);
         } catch (BadRegistrationDataException e) {
             return ResponseEntity.badRequest().body("Данные для регистрации неправильны");
         } catch (UserExistsException e) {

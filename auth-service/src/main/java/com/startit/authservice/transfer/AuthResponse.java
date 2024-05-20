@@ -14,6 +14,7 @@ public class AuthResponse {
     private String errorMsg;
     private String accessToken;
     private String refreshToken;
+    private Long userId;
 
     public AuthResponse(boolean isValid, String accessToken, String refreshToken) {
         this.isValid = isValid;

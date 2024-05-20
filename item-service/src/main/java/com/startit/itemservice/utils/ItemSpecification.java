@@ -19,7 +19,9 @@ public class ItemSpecification {
             }
 
             if (filter.getCategoryId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("category").get("id"), filter.getCategoryId()));
+                predicates.add(criteriaBuilder.equal(
+                        root.join("categories").get("id"), filter.getCategoryId())
+                );
             }
 
             if (filter.getLocationId() != null) {
@@ -27,7 +29,7 @@ public class ItemSpecification {
             }
 
             if (filter.getSellerId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("seller").get("id"), filter.getSellerId()));
+                predicates.add(criteriaBuilder.equal(root.get("sellerId"), filter.getSellerId()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

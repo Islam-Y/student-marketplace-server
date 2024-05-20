@@ -30,7 +30,8 @@ public class AuthService {
 
         var user = request.getUser();
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        if (userService.save(user) == 0) {
+        Long userId = userService.save(user);
+        if (userId == 0) {
             throw new RuntimeException("Пользователь не смог сохранится в системе");
         }
 
@@ -41,6 +42,7 @@ public class AuthService {
                 .isValid(true)
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .userId(userId)
                 .build();
     }
 
@@ -59,6 +61,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .userId(rawUser.getId())
                 .build();
     }
 }

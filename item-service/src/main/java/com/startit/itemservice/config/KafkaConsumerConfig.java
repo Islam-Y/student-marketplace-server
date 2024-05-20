@@ -25,7 +25,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, User> userConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "feedback");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "item");
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.startit.shared.transfer");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(User.class));
