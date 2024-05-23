@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 public interface MessageMapper {
     MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);
 
+    @Mapping(target = "globalSeqNumber", ignore = true)
     Message toDto(MessageEntity entity);
     MessageEntity toEntity(Message entity);
 }

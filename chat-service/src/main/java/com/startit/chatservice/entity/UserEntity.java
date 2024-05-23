@@ -15,7 +15,6 @@ public class UserEntity implements Persistable<Long> {
     private String username;
     private String password;
     private String familyName;
-    private Integer isuNumber;
     private String role;
 
     @Override

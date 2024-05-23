@@ -19,9 +19,6 @@ public class GatewayConfig {
                         .path("/api/v1/chat/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://chat-service"))
-                .route("ws-chat-service", r -> r
-                        .path("/ws/**")
-                        .uri("lb://chat-service"))
                 .route("item-service", r -> r.path("/api/v1/item/**",
                                 "/api/v1/feedback/**",
                                 "/api/v1/category/**",

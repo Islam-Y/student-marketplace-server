@@ -7,4 +7,5 @@ import reactor.core.publisher.Flux;
 
 public interface MessageRepo extends ReactiveCrudRepository<MessageEntity, Long> {
     Flux<MessageEntity> findByChatId(Long chatId, Pageable pageable);
+    Flux<MessageEntity> findById(Long id, Pageable pageable);
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,16 +18,16 @@ public class ItemService {
 
     private final ItemServiceClient itemServiceClient;
 
-    @CircuitBreaker(name = "itemService", fallbackMethod = "getFallbackItemByUser")
-    public Page<Item> getItemByUser(@PathVariable Long id, Pageable pageable) {
-        return itemServiceClient.getItemByUser(id, pageable);
+//    @CircuitBreaker(name = "itemService", fallbackMethod = "getFallbackItemByUser")
+    public List<Item> getItemByUser(Long sellerId, Pageable pageable) {
+        return itemServiceClient.searchItem(sellerId, pageable);
     }
 
-    public Page<Item> getFallbackItemByUser(@PathVariable Long id, Pageable pageable, Throwable throwable) {
-        return Page.empty();
+    public List<Item> getFallbackItemByUser(Long sellerId, Pageable pageable, Throwable throwable) {
+        return List.of();
     }
 
-    @CircuitBreaker(name = "itemService", fallbackMethod = "getFallbackItemByUser")
+//    @CircuitBreaker(name = "itemService", fallbackMethod = "getFallbackItemByUser")
     public Optional<Item> getItem(@PathVariable Long id) {
         return itemServiceClient.getItem(id);
     }

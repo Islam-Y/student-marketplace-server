@@ -76,6 +76,17 @@ public class ItemController {
         }
     }
 
+    @GetMapping("/getInfo")
+    public ResponseEntity<Object> getItem(
+            Long itemId
+    ) {
+        try {
+            return ResponseEntity.ok(service.searchItem(itemId));
+        } catch (Exception ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/search")
     public ResponseEntity<Object> searchItem(
             String itemName,
@@ -96,37 +107,6 @@ public class ItemController {
             return ResponseEntity.ok(result);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<Object> getAll(Pageable pageable,
-                                         HttpServletResponse response
-    ) {
-        try {
-            var result = service.getAll(pageable);
-            response.setHeader("X-Total-Count", String.valueOf(result.size()));
-            return ResponseEntity.ok(result);
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getInfo(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(service.findById(id).orElseThrow());
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/all_by_user/{id}")
-    public ResponseEntity<Page<Item>> getItemsByUser(@PathVariable Long id, Pageable pageable) {
-        try {
-            return ResponseEntity.ok(service.findBySellerId(id, pageable));
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().build();
         }
     }
 }

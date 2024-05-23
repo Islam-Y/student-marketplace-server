@@ -62,17 +62,8 @@ public class ItemService {
         return save(item);
     }
 
-    public Optional<Item> findById(Long id) {
-        return repo.findById(id).map(MAPPER::toDto);
-    }
-
-    public Page<Item> findBySellerId(Long id, Pageable pageable) {
-        Pageable sortedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by("id").ascending()
-        );
-        return repo.findBySellerId(id, sortedPageable).map(MAPPER::toDto);
+    public Item searchItem(Long itemId) {
+        return repo.findById(itemId).map(MAPPER::toDto).orElseThrow();
     }
 
     public List<Item> searchItems(SearchFilter searchFilter, Pageable pageable) {
@@ -86,12 +77,6 @@ public class ItemService {
                 .toList();
     }
 
-    public List<Item> getAll(Pageable pageable) {
-        return repo.findAll(pageable).stream()
-                .map(MAPPER::toDto)
-                .toList();
-    }
-
     @KafkaListener(
             topics = "user-creation",
             containerFactory = "userKafkaListenerContainerFactory",
@@ -100,6 +85,5 @@ public class ItemService {
         log.info("Received Message in group item: {} ", user);
         var userEntity = UserMapper.INSTANCE.toEntity(user);
         userRepo.save(userEntity);
-//        var saved = userRepo.findByUsername("bada1012");
     }
 }

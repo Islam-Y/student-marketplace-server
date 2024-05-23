@@ -6,14 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 
 @FeignClient(name = "item-service")
 public interface ItemServiceClient {
-    @GetMapping(value = "/api/v1/item/all_by_user/{id}")
-    Page<Item> getItemByUser(@PathVariable Long id, Pageable pageable);
+    @GetMapping("/api/v1/item/search")
+    List<Item> searchItem(@RequestParam("sellerId") Long sellerId, Pageable pageable);
 
-    @GetMapping(value = "/api/v1/item/{id}")
+    @GetMapping(value = "/api/v1/item/getInfo?itemId={id}")
     Optional<Item> getItem(@PathVariable Long id);
 }
